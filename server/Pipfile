@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 fastapi = {extras = ["all"], version = "*"}
 python-dotenv = "*"
+sqlmodel = "*"
+email-validator = "*"
 
 [dev-packages]
 black = "*"
