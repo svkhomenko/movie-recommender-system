@@ -1,23 +1,3 @@
-from sqlmodel import Field, SQLModel, Relationship
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .user import User
-    from .movie import Movie
-
-# user_id
-# movie_id
-# rating
-
-
-class Rating(SQLModel, table=True):
-    user_id: int | None = Field(
-        default=None, foreign_key="user.id", primary_key=True, ondelete="CASCADE"
-    )
-    movie_id: int | None = Field(
-        default=None, foreign_key="movie.id", primary_key=True, ondelete="CASCADE"
-    )
-    rating: int
-
-    user: "User" = Relationship(back_populates="ratings")
-    movie: "Movie" = Relationship(back_populates="ratings")
+version https://git-lfs.github.com/spec/v1
+oid sha256:3842d2f4f3268873f5c1e3d5d5376958e444c51f82412b3b24966651ed6ad22f
+size 607
