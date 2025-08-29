@@ -1,3 +1,17 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f3ef07d8d122e1fa4936c2d7cc60994e4240762833a3cf9a224d4fadf7538c0b
-size 398
+from sqlmodel import Field, SQLModel, Relationship
+from typing import TYPE_CHECKING
+from models.movie_genre import MovieGenre
+
+if TYPE_CHECKING:
+    from .movie import Movie
+
+
+# id
+# name
+
+
+class Genre(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field()
+
+    movies: list["Movie"] = Relationship(back_populates="genres", link_model=MovieGenre)

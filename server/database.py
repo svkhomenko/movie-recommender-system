@@ -1,3 +1,7 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:f7192124790abc2c05a0bbcec2e55e8739a8c112c2713ba10e6568293ce75ccc
-size 148
+from sqlmodel import create_engine
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+engine = create_engine(os.getenv("DATABASE_URL") or "")

@@ -1,3 +1,20 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4fa9095b626d3930cc8faa97d3373d5d5d96caf5af876667eec993efca9a1deb
-size 328
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = {extras = ["all"], version = "*"}
+python-dotenv = "*"
+sqlmodel = "*"
+email-validator = "*"
+alembic = "*"
+mysqlclient = "*"
+pandas = "*"
+
+[dev-packages]
+black = "*"
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.9"
