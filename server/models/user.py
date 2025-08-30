@@ -2,6 +2,7 @@ from sqlmodel import Field, SQLModel, Column, Enum, Relationship
 from pydantic import EmailStr
 import enum
 from typing import TYPE_CHECKING
+from ..consts.validation import PASSWORD_LENGTH
 
 if TYPE_CHECKING:
     from .viewing_history import ViewingHistory
@@ -43,6 +44,13 @@ class User(SQLModel, table=True):
         back_populates="user", cascade_delete=True
     )
     watched: list["Watched"] = Relationship(back_populates="user", cascade_delete=True)
+
+
+class UserCreate(SQLModel):
+    email: EmailStr
+    password: str = Field(
+        min_length=PASSWORD_LENGTH["min"], max_length=PASSWORD_LENGTH["max"]
+    )
 
 
 # class UserPublic(UserBase):
