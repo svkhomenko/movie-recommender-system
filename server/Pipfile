@@ -11,6 +11,8 @@ email-validator = "*"
 alembic = "*"
 mysqlclient = "*"
 pandas = "*"
+pyjwt = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 black = "*"
