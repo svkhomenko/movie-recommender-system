@@ -1,7 +1,7 @@
 from sqlmodel import Session
-from ..database import engine
 from typing import Annotated
 from fastapi import Depends
+from database import engine
 
 
 def get_session():
