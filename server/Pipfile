@@ -13,6 +13,8 @@ mysqlclient = "*"
 pandas = "*"
 pyjwt = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
+jinja2 = "*"
+bcrypt = "==4.0.1"
 
 [dev-packages]
 black = "*"

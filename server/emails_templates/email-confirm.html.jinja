@@ -1,0 +1,15 @@
+{% extends "index.html.jinja" %}
+{% block title %}
+  <h1>Your email needs to be confirmed</h1>
+{% endblock %}
+{% block description %}
+  <div>
+    <p>Please confirm your email in Movie RS by clicking the button below:</p>
+  </div>
+  <div>
+    <a href="{{ client_url + '/confirm-email?token=' + token }}">Confirm your email</a>
+  </div>
+  <div>
+    <p>This link is only available for an hour.</p>
+  </div>
+{% endblock %}
