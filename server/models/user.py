@@ -2,7 +2,8 @@ from sqlmodel import Field, SQLModel, Column, Enum, Relationship
 from pydantic import EmailStr
 import enum
 from typing import TYPE_CHECKING
-from ..consts.validation import PASSWORD_LENGTH
+from consts.validation import PASSWORD_LENGTH
+
 
 if TYPE_CHECKING:
     from .viewing_history import ViewingHistory
@@ -51,6 +52,10 @@ class UserCreate(SQLModel):
     password: str = Field(
         min_length=PASSWORD_LENGTH["min"], max_length=PASSWORD_LENGTH["max"]
     )
+
+
+class UserId(SQLModel):
+    id: int
 
 
 # class UserPublic(UserBase):

@@ -6,6 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
+from routers import root_router
+
+
 app = FastAPI()
 
 app.add_middleware(
@@ -17,10 +20,7 @@ app.add_middleware(
     expose_headers=["X-Total-Count"],
 )
 
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+app.include_router(root_router)
 
 
 if __name__ == "__main__":
