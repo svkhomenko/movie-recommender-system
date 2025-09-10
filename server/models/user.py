@@ -24,10 +24,6 @@ class UserRoleEnum(enum.Enum):
 # is_active
 
 
-# class UserBase(SQLModel):
-#     pass
-
-
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     email: EmailStr = Field()
@@ -47,11 +43,14 @@ class User(SQLModel, table=True):
     watched: list["Watched"] = Relationship(back_populates="user", cascade_delete=True)
 
 
-class UserCreate(SQLModel):
-    email: EmailStr
+class UserPasswordValidate(SQLModel):
     password: str = Field(
         min_length=PASSWORD_LENGTH["min"], max_length=PASSWORD_LENGTH["max"]
     )
+
+
+class UserCreate(UserPasswordValidate):
+    email: EmailStr
 
 
 class UserId(SQLModel):
@@ -67,6 +66,14 @@ class UserLoginResponse(TokenResponse):
     id: int
     email: EmailStr
     role: UserRoleEnum
+
+
+class UserPasswordConfirmation(SQLModel):
+    email: EmailStr
+
+
+# class UserBase(SQLModel):
+#     pass
 
 
 # class UserPublic(UserBase):

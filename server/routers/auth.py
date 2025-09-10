@@ -1,6 +1,14 @@
 from fastapi import APIRouter, status, HTTPException, Response, Cookie
 from sqlmodel import select
-from models.user import UserCreate, UserId, User, UserLoginResponse, TokenResponse
+from models.user import (
+    UserCreate,
+    UserId,
+    User,
+    UserLoginResponse,
+    TokenResponse,
+    UserPasswordConfirmation,
+    UserPasswordValidate,
+)
 from dependencies.session import SessionDep
 from dependencies.oauth2 import OAuth2Dep
 from services import (
@@ -135,3 +143,58 @@ async def logout(response: Response):
     response.delete_cookie("refreshToken")
     response.status_code = status.HTTP_204_NO_CONTENT
     return response
+
+
+@router.post(
+    "/password-reset",
+    responses={
+        404: {"description": "No user with this email found"},
+    },
+)
+async def send_password_confirmation(
+    user_data: UserPasswordConfirmation, session: SessionDep
+):
+    user = session.exec(
+        select(User).where(User.email == user_data.email).limit(1)
+    ).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No user with this email found",
+        )
+
+    if user.id:
+        UserService.send_confirm_token_for_password(user.id, user.email)
+
+    return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/password-reset/{token}",
+    responses={
+        403: {"description": "The confirm token is invalid or has expired"},
+    },
+)
+async def reset_password(
+    token: str,
+    user_data: UserPasswordValidate,
+    session: SessionDep,
+):
+    token_error = HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="The confirm token is invalid or has expired",
+    )
+
+    data = TokenService.validate(token)
+    if not (isinstance(data, dict) and "id" in data):
+        raise token_error
+
+    user = session.get(User, data["id"])
+    if not user:
+        raise token_error
+
+    user.password = PasswordService.hash_password(user_data.password)
+    session.add(user)
+    session.commit()
+
+    return Response(status_code=status.HTTP_200_OK)
