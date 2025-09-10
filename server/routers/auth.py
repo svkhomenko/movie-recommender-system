@@ -1,7 +1,14 @@
 from fastapi import APIRouter, status, HTTPException, Response
-from models.user import UserCreate, UserId, User
+from sqlmodel import select
+from models.user import UserCreate, UserId, User, UserLoginResponse
 from dependencies.session import SessionDep
-from services import user as UserService, token as TokenService
+from dependencies.oauth2 import OAuth2Dep
+from services import (
+    user as UserService,
+    token as TokenService,
+    password as PasswordService,
+)
+from consts.cookie import COOKIE_OPTIONS
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -40,3 +47,46 @@ async def confirm_email(token: str, session: SessionDep):
     session.commit()
 
     return Response(status_code=status.HTTP_200_OK)
+
+
+@router.post(
+    "/login",
+    response_model=UserLoginResponse,
+    responses={
+        401: {"description": "Wrong username and/or password"},
+        403: {"description": "Please confirm your email"},
+    },
+)
+async def login(response: Response, form_data: OAuth2Dep, session: SessionDep):
+    login_error = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Wrong username and/or password",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    user = session.exec(
+        select(User).where(User.email == form_data.username).limit(1)
+    ).first()
+
+    if not user or not PasswordService.compare_passwords(
+        form_data.password, user.password
+    ):
+        raise login_error
+
+    if not user.is_active:
+        if user.id:
+            UserService.send_confirm_token_for_email(user.id, user.email)
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Please confirm your email",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token, refresh_token = TokenService.generate_user_tokens({"id": user.id})
+
+    response.set_cookie(key="refreshToken", value=refresh_token, **COOKIE_OPTIONS)
+
+    return UserLoginResponse(
+        access_token=access_token, token_type="bearer", **user.__dict__
+    )
