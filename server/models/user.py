@@ -58,13 +58,15 @@ class UserId(SQLModel):
     id: int
 
 
-class UserLoginResponse(SQLModel):
+class TokenResponse(SQLModel):
+    access_token: str
+    token_type: str
+
+
+class UserLoginResponse(TokenResponse):
     id: int
     email: EmailStr
     role: UserRoleEnum
-
-    access_token: str
-    token_type: str
 
 
 # class UserPublic(UserBase):

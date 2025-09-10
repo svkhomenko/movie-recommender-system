@@ -1,6 +1,6 @@
-from fastapi import APIRouter, status, HTTPException, Response
+from fastapi import APIRouter, status, HTTPException, Response, Cookie
 from sqlmodel import select
-from models.user import UserCreate, UserId, User, UserLoginResponse
+from models.user import UserCreate, UserId, User, UserLoginResponse, TokenResponse
 from dependencies.session import SessionDep
 from dependencies.oauth2 import OAuth2Dep
 from services import (
@@ -90,3 +90,48 @@ async def login(response: Response, form_data: OAuth2Dep, session: SessionDep):
     return UserLoginResponse(
         access_token=access_token, token_type="bearer", **user.__dict__
     )
+
+
+@router.post(
+    "/refresh",
+    response_model=TokenResponse,
+    responses={
+        403: {"description": "The refresh token is invalid"},
+        404: {"description": "No user found"},
+    },
+)
+async def refresh(
+    response: Response,
+    session: SessionDep,
+    refreshToken: str | None = Cookie(default=None),
+):
+    data = TokenService.validate(refreshToken)
+
+    if not (isinstance(data, dict) and "id" in data):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The refresh token is invalid",
+        )
+
+    user = session.get(User, data["id"])
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No user found",
+        )
+
+    access_token, refresh_token = TokenService.generate_user_tokens({"id": user.id})
+
+    response.set_cookie(key="refreshToken", value=refresh_token, **COOKIE_OPTIONS)
+
+    return TokenResponse(access_token=access_token, token_type="bearer")
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def logout(response: Response):
+    response.delete_cookie("refreshToken")
+    response.status_code = status.HTTP_204_NO_CONTENT
+    return response
