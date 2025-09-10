@@ -57,6 +57,10 @@ class UserId(SQLModel):
     id: int
 
 
+class UserIsActive(SQLModel):
+    is_active: bool
+
+
 class TokenResponse(SQLModel):
     access_token: str
     token_type: str
@@ -70,6 +74,10 @@ class UserLoginResponse(TokenResponse):
 
 class UserPasswordConfirmation(SQLModel):
     email: EmailStr
+
+
+class UserUpdate(SQLModel):
+    email: EmailStr | None
 
 
 # class UserBase(SQLModel):
