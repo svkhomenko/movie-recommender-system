@@ -15,7 +15,11 @@ class Rating(SQLModel, table=True):
         default=None, foreign_key="user.id", primary_key=True, ondelete="CASCADE"
     )
     movie_id: int | None = Field(
-        default=None, foreign_key="movie.id", primary_key=True, ondelete="CASCADE"
+        default=None,
+        foreign_key="movie.id",
+        primary_key=True,
+        ondelete="CASCADE",
+        index=True,
     )
     rating: int
 
