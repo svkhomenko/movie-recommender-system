@@ -1,6 +1,5 @@
 from sqlmodel import Field, SQLModel, Column, Relationship
-
-# from pydantic import model_validator
+from enum import Enum
 from datetime import date
 from sqlalchemy.dialects import mysql
 from models.movie_genre import MovieGenre
@@ -70,49 +69,20 @@ class MoviePublic(SQLModel):
     collections: list["CollectionWithoutMovies"] = []
 
 
-# class FilterParams(BaseModel):
-#     order_by: Literal["created_at", "updated_at"] = "created_at"
-
-# const getResumesSchema = Joi.object()
-#   .keys({
-#     userId: Joi.number(),
-#     salaryMin: Joi.number().positive().max(INT_MAX),
-#     salaryMax: Joi.number().positive().max(INT_MAX),
-#     experienceMin: Joi.number().min(0).max(INT_MAX),
-#     experienceMax: Joi.number().min(0).max(INT_MAX),
-#     education: Joi.array().items(Joi.string().valid(...EDUCATION_ENUM)),
-#     place_id: Joi.string(),
-#     online: Joi.boolean(),
-#     contract: Joi.array().items(Joi.string().valid(...CONTRACT_ENUM)),
-#   })
+class MoviePublicResultType(str, Enum):
+    BEST_RATING = "best_rating"
+    NEW = "new"
+    POPULAR_NOW = "popular_now"
 
 
 class MoviePublicFilterSearchParams(SQLModel):
     limit: int = Field(default=10, ge=0)
     offset: int = Field(default=0, ge=-1)
     q: str | None = None
-
-    # @model_validator(mode="before")
-    # @classmethod
-    # def validate_dependencies(cls, data):
-    #     if not isinstance(data, dict):
-    #         return data
-
-    #     limit = data.get("limit")
-    #     offset = data.get("offset")
-
-    #     if (limit is not None and offset is None) or (
-    #         limit is None and offset is not None
-    #     ):
-    #         raise ValueError(
-    #             "Both limit and offset fields must be specified or neither of them must be specified"
-    #         )
-
-    #     if limit is not None and offset is not None:
-    #         if offset <= limit:
-    #             raise ValueError("offset must be strictly greater than limit")
-
-    #     return data
+    year_min: int | None = Field(default=None, ge=0)
+    year_max: int | None = Field(default=None, ge=0)
+    genre_ids: list[int] = []
+    result_type: MoviePublicResultType = MoviePublicResultType.BEST_RATING
 
 
 MoviePublic.model_rebuild()
