@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 # release_date
 # poster_path
 # vote_average
+# vote_count
 
 
 class Movie(SQLModel, table=True):
@@ -36,6 +37,7 @@ class Movie(SQLModel, table=True):
     release_date: date = Field()
     poster_path: str = Field()
     vote_average: float = Field(default=0.0)
+    vote_count: int = Field(default=0)
 
     viewing_history: list["ViewingHistory"] = Relationship(
         back_populates="movie", cascade_delete=True
@@ -62,8 +64,7 @@ class MoviePublic(SQLModel):
     release_date: date
     poster_path: str
     vote_average: float
-
-    rating: float | None = None
+    vote_count: int
 
     genres: list["GenreWithoutMovies"] = []
     collections: list["CollectionWithoutMovies"] = []
