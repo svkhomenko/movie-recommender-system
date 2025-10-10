@@ -15,3 +15,8 @@ class Genre(SQLModel, table=True):
     name: str = Field()
 
     movies: list["Movie"] = Relationship(back_populates="genres", link_model=MovieGenre)
+
+
+class GenreWithoutMovies(SQLModel):
+    id: int
+    name: str

@@ -35,6 +35,7 @@ def fill_db_with_movies():
                 "keywords": row.keywords,
                 "poster_path": row.poster_path,
                 "release_date": cast(pd.Timestamp, row.release_date).date(),
+                "vote_average": row.vote_average,
             }
             movie = get_or_create(session, models.Movie, **movie_data)
 

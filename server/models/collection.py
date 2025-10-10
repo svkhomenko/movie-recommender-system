@@ -17,3 +17,8 @@ class Collection(SQLModel, table=True):
     movies: list["Movie"] = Relationship(
         back_populates="collections", link_model=MovieCollection
     )
+
+
+class CollectionWithoutMovies(SQLModel):
+    id: int
+    name: str
