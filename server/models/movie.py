@@ -88,8 +88,8 @@ class MoviePublicResultType(str, Enum):
 
 
 class MoviePublicFilterSearchParams(SQLModel):
-    limit: int = Field(default=10, ge=0)
-    offset: int = Field(default=0, ge=-1)
+    limit: int = Field(default=10, gt=0)
+    offset: int = Field(default=0, ge=0)
     q: str | None = None
     year_min: int | None = Field(default=None, ge=0)
     year_max: int | None = Field(default=None, ge=0)
