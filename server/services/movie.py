@@ -1,3 +1,4 @@
+from fastapi import status, HTTPException
 from sqlmodel import Session, select, func, or_, desc, col, and_
 from sqlalchemy.sql import Subquery
 from sqlalchemy.orm import aliased
@@ -183,7 +184,19 @@ def get_subquery_for_movie_by_id(cur_user: User | None) -> list[Any]:
 
 def add_viewing_history(session: Session, cur_user: User | None, movie_id: int):
     if cur_user and cur_user.id:
-        viewinghistory = ViewingHistory(user_id=cur_user.id, movie_id=movie_id)
-        session.add(viewinghistory)
+        viewing_history = ViewingHistory(user_id=cur_user.id, movie_id=movie_id)
+        session.add(viewing_history)
         session.commit()
-        session.refresh(viewinghistory)
+        session.refresh(viewing_history)
+
+
+def find_one_or_throw(session: Session, movie_id: int):
+    movie = session.get(Movie, movie_id)
+
+    if not movie:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No movie found",
+        )
+
+    return movie

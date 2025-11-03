@@ -25,3 +25,7 @@ class Rating(SQLModel, table=True):
 
     user: "User" = Relationship(back_populates="ratings")
     movie: "Movie" = Relationship(back_populates="ratings")
+
+
+class RatingCreate(SQLModel):
+    rating: int = Field(ge=0, le=10)
