@@ -78,18 +78,3 @@ class UserPasswordConfirmation(SQLModel):
 
 class UserUpdate(SQLModel):
     email: EmailStr | None
-
-
-# class UserBase(SQLModel):
-#     pass
-
-
-# class UserPublic(UserBase):
-#     pass
-
-
-# class UserCreate(UserBase):
-#     pass
-
-# class UserUpdate(UserBase):
-#     pass
