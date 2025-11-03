@@ -6,6 +6,7 @@ from models.movie_genre import MovieGenre
 from models.movie_collection import MovieCollection
 from .genre import GenreWithoutMovies
 from .collection import CollectionWithoutMovies
+from .movie_crew import CrewWithoutMovies
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -67,6 +68,15 @@ class MoviePublic(SQLModel):
 
     genres: list["GenreWithoutMovies"] = []
     collections: list["CollectionWithoutMovies"] = []
+
+
+class OneMoviePublic(MoviePublic):
+    rating: int | None = Field(default=None)
+    watch_later: bool | None = Field(default=None)
+    watched: bool | None = Field(default=None)
+
+    casts: list["CrewWithoutMovies"] = []
+    directors: list["CrewWithoutMovies"] = []
 
 
 class MoviePublicResultType(str, Enum):

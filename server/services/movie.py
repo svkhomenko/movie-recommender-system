@@ -1,6 +1,7 @@
 from sqlmodel import Session, select, func, or_, desc, col, and_
 from sqlalchemy.sql import Subquery
 from sqlalchemy.orm import aliased
+from sqlalchemy.sql.expression import literal
 from datetime import date, datetime, timedelta
 from typing import Any
 from models.movie import Movie, MoviePublicFilterSearchParams, MoviePublicResultType
@@ -9,6 +10,8 @@ from models.genre import Genre
 from models.user import User
 from models.movie_collection import MovieCollection
 from models.watched import Watched
+from models.watch_later import WatchLater
+from models.rating import Rating
 
 
 def get_where_options(
@@ -141,3 +144,46 @@ def get_continue_watching_movies(
     ).all()
 
     return [movie for movie, _ in results]
+
+
+def get_subquery_for_movie_by_id(cur_user: User | None) -> list[Any]:
+    if cur_user:
+        user_rating_select = (
+            select(Rating.rating)
+            .where(Rating.movie_id == Movie.id)
+            .where(Rating.user_id == cur_user.id)
+            .limit(1)
+            .scalar_subquery()
+        )
+
+        user_watch_later_select = (
+            select(WatchLater.created_at)
+            .where(WatchLater.movie_id == Movie.id)
+            .where(WatchLater.user_id == cur_user.id)
+            .limit(1)
+            .scalar_subquery()
+        )
+
+        user_watched_select = (
+            select(Watched.created_at)
+            .where(Watched.movie_id == Movie.id)
+            .where(Watched.user_id == cur_user.id)
+            .limit(1)
+            .scalar_subquery()
+        )
+    else:
+        user_rating_select = literal(None)
+        user_watch_later_select = literal(None)
+        user_watched_select = literal(None)
+
+    subqueries = [user_rating_select, user_watch_later_select, user_watched_select]
+
+    return subqueries
+
+
+def add_viewing_history(session: Session, cur_user: User | None, movie_id: int):
+    if cur_user and cur_user.id:
+        viewinghistory = ViewingHistory(user_id=cur_user.id, movie_id=movie_id)
+        session.add(viewinghistory)
+        session.commit()
+        session.refresh(viewinghistory)

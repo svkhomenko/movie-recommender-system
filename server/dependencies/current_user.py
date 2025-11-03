@@ -27,6 +27,16 @@ def get_current_user(
     return user
 
 
+def get_optional_current_user(
+    token: Annotated[str | None, Depends(oauth2_scheme_optional)], session: SessionDep
+):
+    data = TokenService.validate(token)
+    if not (isinstance(data, dict) and "id" in data):
+        return
+
+    return session.get(User, data["id"])
+
+
 def get_current_user_for_personal_lists(
     token: Annotated[str | None, Depends(oauth2_scheme_optional)],
     session: SessionDep,
@@ -46,6 +56,7 @@ def get_current_user_for_personal_lists(
 
 
 CurrentUserDep = Annotated[User, Depends(get_current_user)]
+OptionalCurrentUserDep = Annotated[User | None, Depends(get_optional_current_user)]
 CurrentUserForPersonalListsDep = Annotated[
     User | None, Depends(get_current_user_for_personal_lists)
 ]

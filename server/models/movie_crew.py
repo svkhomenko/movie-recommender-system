@@ -30,3 +30,11 @@ class MovieCrew(SQLModel, table=True):
 
     movie: "Movie" = Relationship(back_populates="movie_crew")
     crew: "Crew" = Relationship(back_populates="movie_crew")
+
+
+class CrewWithoutMovies(SQLModel):
+    id: int
+    movie_id: int
+    crew_id: int
+    full_name: str
+    role: MovieCrewRoleEnum
