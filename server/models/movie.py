@@ -73,6 +73,8 @@ class MoviePublicResultType(str, Enum):
     BEST_RATING = "best_rating"
     NEW = "new"
     POPULAR_NOW = "popular_now"
+    CONTINUE_WATCHING = "continue_watching"
+    RECOMMENDATIONS = "recommendations"
 
 
 class MoviePublicFilterSearchParams(SQLModel):

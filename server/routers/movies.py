@@ -2,6 +2,7 @@ from fastapi import APIRouter, Response, Query
 from sqlmodel import select, func
 from typing import Annotated
 from dependencies.session import SessionDep
+from dependencies.current_user import CurrentUserForPersonalListsDep
 from models.movie import (
     Movie,
     MoviePublic,
@@ -18,8 +19,9 @@ async def get_movies(
     query: Annotated[MoviePublicFilterSearchParams, Query()],
     session: SessionDep,
     response: Response,
+    cur_user: CurrentUserForPersonalListsDep,
 ):
-    where = MovieService.get_where_options(query)
+    where = MovieService.get_where_options(query, cur_user)
     order_by = MovieService.get_order_by_options(query)
 
     subquery_ids = (
@@ -34,7 +36,12 @@ async def get_movies(
 
     if query.result_type == MoviePublicResultType.POPULAR_NOW:
         return MovieService.get_popular_now_movies(
-            session, where, order_by, query, subquery_ids
+            session, order_by, query, subquery_ids
+        )
+
+    if query.result_type == MoviePublicResultType.CONTINUE_WATCHING and cur_user:
+        return MovieService.get_continue_watching_movies(
+            session, order_by, query, subquery_ids, cur_user
         )
 
     movies = session.exec(
