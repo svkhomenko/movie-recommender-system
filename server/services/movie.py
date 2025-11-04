@@ -5,7 +5,12 @@ from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import literal
 from datetime import date, datetime, timedelta
 from typing import Any
-from models.movie import Movie, MoviePublicFilterSearchParams, MoviePublicResultType
+from models.movie import (
+    Movie,
+    MoviePublicFilterSearchParams,
+    MoviePublicResultType,
+    MoviePublic,
+)
 from models.viewing_history import ViewingHistory
 from models.genre import Genre
 from models.user import User
@@ -95,6 +100,17 @@ def get_where_options(
             )
 
             where.append(col(Movie.id).in_(own_rating_movie_ids_subquery.select()))
+
+    if params.result_type == MoviePublicResultType.VIEWING_HISTORY:
+        if cur_user:
+            viewing_history_movie_ids_subquery = (
+                select(ViewingHistory.movie_id)
+                .where(ViewingHistory.user_id == cur_user.id)
+                .distinct()
+                .subquery()
+            )
+
+            where.append(col(Movie.id).in_(viewing_history_movie_ids_subquery.select()))
 
     return where
 
@@ -217,6 +233,53 @@ def get_watched_movies(
     return movies
 
 
+def get_viewing_history_movies(
+    session: Session,
+    order_by: list[Any],
+    query: MoviePublicFilterSearchParams,
+    subquery_ids: Subquery,
+    cur_user: User,
+):
+    max_viewing_history_date_subquery = (
+        select(
+            ViewingHistory.movie_id,
+            func.max(ViewingHistory.created_at).label("latest_viewed_at"),
+        )
+        .where(ViewingHistory.user_id == cur_user.id)
+        .group_by(col(ViewingHistory.movie_id))
+        .subquery()
+    )
+
+    results = session.exec(
+        select(
+            Movie,
+            max_viewing_history_date_subquery.c.latest_viewed_at.label(
+                "latest_viewed_at"
+            ),
+        )
+        .where(col(Movie.id).in_(select(subquery_ids.c.id)))
+        .join(
+            max_viewing_history_date_subquery,
+            col(Movie.id) == max_viewing_history_date_subquery.c.movie_id,
+        )
+        .order_by(
+            max_viewing_history_date_subquery.c.latest_viewed_at.desc(), *order_by
+        )
+        .limit(query.limit)
+        .offset(query.offset)
+    ).all()
+
+    movies = []
+    for movie, latest_viewed_at in results:
+        movie_data = movie.model_dump()
+        movie_data["latest_viewed_at"] = latest_viewed_at
+        movie_data["genres"] = movie.genres
+        movie_data["collections"] = movie.collections
+        movies.append(MoviePublic(**movie_data))
+
+    return movies
+
+
 def get_subquery_for_movie_by_id(cur_user: User | None) -> list[Any]:
     if cur_user:
         user_rating_select = (
@@ -250,14 +313,6 @@ def get_subquery_for_movie_by_id(cur_user: User | None) -> list[Any]:
     subqueries = [user_rating_select, user_watch_later_select, user_watched_select]
 
     return subqueries
-
-
-def add_viewing_history(session: Session, cur_user: User | None, movie_id: int):
-    if cur_user and cur_user.id:
-        viewing_history = ViewingHistory(user_id=cur_user.id, movie_id=movie_id)
-        session.add(viewing_history)
-        session.commit()
-        session.refresh(viewing_history)
 
 
 def find_one_or_throw(session: Session, movie_id: int):

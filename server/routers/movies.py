@@ -17,6 +17,7 @@ from models.movie import (
 )
 from models.movie_crew import MovieCrew, MovieCrewRoleEnum, CrewWithoutMovies
 from services import movie as MovieService
+from services import viewing_history as ViewingHistoryService
 
 router = APIRouter(prefix="/movies", tags=["movies"])
 
@@ -63,6 +64,11 @@ async def get_movies(
             session, order_by, query, subquery_ids, cur_user
         )
 
+    if query.result_type == MoviePublicResultType.VIEWING_HISTORY and cur_user:
+        return MovieService.get_viewing_history_movies(
+            session, order_by, query, subquery_ids, cur_user
+        )
+
     movies = session.exec(
         select(Movie)
         .join(GenresAttr)
@@ -102,7 +108,7 @@ def get_movie_by_id(id: int, session: SessionDep, cur_user: OptionalCurrentUserD
             detail="No movie found",
         )
 
-    MovieService.add_viewing_history(session, cur_user, id)
+    ViewingHistoryService.add_viewing_history(session, cur_user, id)
 
     movie, user_rating, watch_later, watched = result
 

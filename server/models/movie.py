@@ -1,6 +1,6 @@
 from sqlmodel import Field, SQLModel, Column, Relationship
 from enum import Enum
-from datetime import date
+from datetime import date, datetime
 from sqlalchemy.dialects import mysql
 from models.movie_genre import MovieGenre
 from models.movie_collection import MovieCollection
@@ -65,6 +65,7 @@ class MoviePublic(SQLModel):
     poster_path: str
     vote_average: float
     vote_count: int
+    latest_viewed_at: datetime | None = Field(default=None)
 
     genres: list["GenreWithoutMovies"] = []
     collections: list["CollectionWithoutMovies"] = []
@@ -88,6 +89,7 @@ class MoviePublicResultType(str, Enum):
     WATCH_LATER = "watch_later"
     WATCHED = "watched"
     OWN_RATING = "own_rating"
+    VIEWING_HISTORY = "viewing_history"
 
 
 class MoviePublicFilterSearchParams(SQLModel):

@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from . import auth, profile, movies, ratings, watch_later, watched
+from . import auth, profile, movies, ratings, watch_later, watched, viewing_history
 
 root_router = APIRouter()
 
@@ -9,3 +9,4 @@ root_router.include_router(movies.router)
 root_router.include_router(ratings.router)
 root_router.include_router(watch_later.router)
 root_router.include_router(watched.router)
+root_router.include_router(viewing_history.router)
