@@ -45,6 +45,8 @@ def get_current_user_for_personal_lists(
     if (
         query.result_type == MoviePublicResultType.CONTINUE_WATCHING
         or query.result_type == MoviePublicResultType.RECOMMENDATIONS
+        or query.result_type == MoviePublicResultType.WATCH_LATER
+        or query.result_type == MoviePublicResultType.WATCHED
     ):
         if token:
             return get_current_user(token, session)

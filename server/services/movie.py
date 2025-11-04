@@ -68,6 +68,26 @@ def get_where_options(
                 col(Movie.id).not_in(select(watched_movie_ids_subquery.c.movie_id))
             )
 
+    if params.result_type == MoviePublicResultType.WATCH_LATER:
+        if cur_user:
+            watch_later_movie_ids_subquery = (
+                select(WatchLater.movie_id)
+                .where(WatchLater.user_id == cur_user.id)
+                .subquery()
+            )
+
+            where.append(col(Movie.id).in_(watch_later_movie_ids_subquery.select()))
+
+    if params.result_type == MoviePublicResultType.WATCHED:
+        if cur_user:
+            watched_movie_ids_subquery = (
+                select(Watched.movie_id)
+                .where(Watched.user_id == cur_user.id)
+                .subquery()
+            )
+
+            where.append(col(Movie.id).in_(watched_movie_ids_subquery.select()))
+
     return where
 
 
@@ -145,6 +165,48 @@ def get_continue_watching_movies(
     ).all()
 
     return [movie for movie, _ in results]
+
+
+def get_watch_later_movies(
+    session: Session,
+    order_by: list[Any],
+    query: MoviePublicFilterSearchParams,
+    subquery_ids: Subquery,
+    cur_user: User,
+):
+    movies = session.exec(
+        select(Movie)
+        .where(col(Movie.id).in_(select(subquery_ids.c.id)))
+        .join(WatchLater, col(Movie.id) == WatchLater.movie_id)
+        .where(WatchLater.user_id == cur_user.id)
+        .order_by(col(WatchLater.created_at).desc(), *order_by)
+        .limit(query.limit)
+        .offset(query.offset)
+        .distinct()
+    ).all()
+
+    return movies
+
+
+def get_watched_movies(
+    session: Session,
+    order_by: list[Any],
+    query: MoviePublicFilterSearchParams,
+    subquery_ids: Subquery,
+    cur_user: User,
+):
+    movies = session.exec(
+        select(Movie)
+        .where(col(Movie.id).in_(select(subquery_ids.c.id)))
+        .join(Watched, col(Movie.id) == Watched.movie_id)
+        .where(Watched.user_id == cur_user.id)
+        .order_by(col(Watched.created_at).desc(), *order_by)
+        .limit(query.limit)
+        .offset(query.offset)
+        .distinct()
+    ).all()
+
+    return movies
 
 
 def get_subquery_for_movie_by_id(cur_user: User | None) -> list[Any]:

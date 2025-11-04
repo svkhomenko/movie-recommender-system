@@ -53,6 +53,16 @@ async def get_movies(
             session, order_by, query, subquery_ids, cur_user
         )
 
+    if query.result_type == MoviePublicResultType.WATCH_LATER and cur_user:
+        return MovieService.get_watch_later_movies(
+            session, order_by, query, subquery_ids, cur_user
+        )
+
+    if query.result_type == MoviePublicResultType.WATCHED and cur_user:
+        return MovieService.get_watched_movies(
+            session, order_by, query, subquery_ids, cur_user
+        )
+
     movies = session.exec(
         select(Movie)
         .join(GenresAttr)
