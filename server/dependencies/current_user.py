@@ -47,6 +47,7 @@ def get_current_user_for_personal_lists(
         or query.result_type == MoviePublicResultType.RECOMMENDATIONS
         or query.result_type == MoviePublicResultType.WATCH_LATER
         or query.result_type == MoviePublicResultType.WATCHED
+        or query.result_type == MoviePublicResultType.OWN_RATING
     ):
         if token:
             return get_current_user(token, session)

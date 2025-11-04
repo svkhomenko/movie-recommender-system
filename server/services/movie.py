@@ -88,6 +88,14 @@ def get_where_options(
 
             where.append(col(Movie.id).in_(watched_movie_ids_subquery.select()))
 
+    if params.result_type == MoviePublicResultType.OWN_RATING:
+        if cur_user:
+            own_rating_movie_ids_subquery = (
+                select(Rating.movie_id).where(Rating.user_id == cur_user.id).subquery()
+            )
+
+            where.append(col(Movie.id).in_(own_rating_movie_ids_subquery.select()))
+
     return where
 
 
