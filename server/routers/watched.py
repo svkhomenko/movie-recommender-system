@@ -20,7 +20,7 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 )
 def create_watched(movie_id: int, session: SessionDep, cur_user: CurrentUserDep):
     MovieService.find_one_or_throw(session, movie_id)
-    return WatchedService.create_or_update(session, movie_id, cur_user)
+    return WatchedService.create_if_doesnt_exist(session, movie_id, cur_user)
 
 
 @router.delete(

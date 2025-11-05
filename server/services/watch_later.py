@@ -1,7 +1,6 @@
 from sqlmodel import Session, select
 from models.watch_later import WatchLater
 from models.user import User
-from datetime import datetime, timezone
 
 
 def get_first(session: Session, movie_id: int, cur_user: User):
@@ -12,17 +11,15 @@ def get_first(session: Session, movie_id: int, cur_user: User):
     ).first()
 
 
-def create_or_update(session: Session, movie_id: int, cur_user: User):
+def create_if_doesnt_exist(session: Session, movie_id: int, cur_user: User):
     watch_later = get_first(session, movie_id, cur_user)
 
-    if watch_later:
-        watch_later.created_at = datetime.now(timezone.utc)
-    else:
+    if not watch_later:
         watch_later = WatchLater(user_id=cur_user.id, movie_id=movie_id)
 
-    session.add(watch_later)
-    session.commit()
-    session.refresh(watch_later)
+        session.add(watch_later)
+        session.commit()
+        session.refresh(watch_later)
 
     return watch_later
 
