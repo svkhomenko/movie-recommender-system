@@ -28,4 +28,4 @@ class Rating(SQLModel, table=True):
 
 
 class RatingCreate(SQLModel):
-    rating: int = Field(ge=0, le=10)
+    rating: int = Field(ge=1, le=10)
