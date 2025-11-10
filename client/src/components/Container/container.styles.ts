@@ -9,7 +9,7 @@ const styles: TStyle = {
       md: '800px',
       lg: '1360px',
     },
-    px: '15px',
+    px: '30px',
     mx: 'auto',
   },
 };
