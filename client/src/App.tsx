@@ -5,6 +5,8 @@ import NotFound from './pages/NotFound/NotFound';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import EmailConfirmation from './pages/Auth/EmailConfirmation';
+import SendPasswordConfirmation from './pages/Auth/SendPasswordConfirmation';
+import PasswordReset from './pages/Auth/PasswordReset';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/confirm-email" element={<EmailConfirmation />} />
+        <Route path="/confirm-password-reset" element={<SendPasswordConfirmation />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
 
         <Route path="/*" element={<NotFound />} />
       </Route>
