@@ -1,4 +1,4 @@
-import { toaster } from '~/components/ui/toaster';
+import { customToaster } from '~/components/ui/toaster';
 
 type HookType<T> = {
   f: (data: T) => any;
@@ -11,17 +11,15 @@ const useRequestHandler = <T>({ f, successMsg, successF }: HookType<T>) => {
     try {
       await f(data).unwrap();
       successMsg &&
-        toaster.create({
+        customToaster({
           description: successMsg,
           type: 'success',
-          closable: true,
         });
       successF && successF();
     } catch (error: any) {
-      toaster.create({
+      customToaster({
         description: error.data.detail,
         type: 'error',
-        closable: true,
       });
     }
   };

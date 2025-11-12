@@ -7,6 +7,14 @@ export const toaster = createToaster({
   pauseOnPageIdle: true,
 });
 
+export const customToaster = (args: object) => {
+  toaster.create({
+    closable: true,
+    duration: 6000,
+    ...args,
+  });
+};
+
 export const Toaster = () => {
   return (
     <Portal>

@@ -20,6 +20,12 @@ const Login = () => {
                 <ReactRouterLink to={'/register'}>Create one</ReactRouterLink>
               </Link>
             </Text>
+            <Text css={styles.footerText}>
+              Forgot your password?{' '}
+              <Link asChild css={styles.link}>
+                <ReactRouterLink to={'/confirm-password-reset'}>Reset it</ReactRouterLink>
+              </Link>
+            </Text>
           </Box>
         </Card.Body>
       </Card.Root>
