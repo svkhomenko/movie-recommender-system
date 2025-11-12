@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '~/hooks/useAppSelector';
 import useRequestHandler from '~/hooks/useRequestHandler';
 import { useLogoutMutation } from '~/store/api/authSlice';
+import { links } from '~/pages/Profile/ProfileInfo';
 
 const NavbarAuth = () => {
   const navigate = useNavigate();
@@ -27,9 +28,11 @@ const NavbarAuth = () => {
               <Menu.Content>
                 <Menu.ItemGroup>
                   <Menu.ItemGroupLabel>Movies</Menu.ItemGroupLabel>
-                  <Menu.Item value="Movies" px={4} py={2} onClick={() => navigate('/')}>
-                    Movies
-                  </Menu.Item>
+                  {links.map((link) => (
+                    <Menu.Item key={link.href} value={link.href} px={4} py={2} onClick={() => navigate(link.href)}>
+                      {link.label}
+                    </Menu.Item>
+                  ))}
                 </Menu.ItemGroup>
                 <Menu.Separator />
                 <Menu.ItemGroup>

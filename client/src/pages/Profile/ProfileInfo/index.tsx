@@ -8,7 +8,7 @@ import styles from '../profile-card.styles';
 
 type IProps = { setIsEdit: React.Dispatch<React.SetStateAction<boolean>> };
 
-const links = [
+export const links = [
   { href: '/profile/ratings', label: 'Ratings' },
   { href: '/profile/watch-later', label: 'Watch Later' },
   { href: '/profile/watched', label: 'Watched' },
