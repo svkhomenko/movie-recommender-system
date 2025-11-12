@@ -23,7 +23,6 @@ const LoginForm = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<ILogin>({
     resolver: zodResolver(loginSchema),
   });
@@ -33,7 +32,6 @@ const LoginForm = () => {
     form.append('username', username);
     form.append('password', password);
     await loginHandler(form);
-    reset();
   });
 
   return (
