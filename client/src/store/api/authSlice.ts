@@ -29,20 +29,6 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       },
       invalidatesTags: ['UserProfile'],
     }),
-    // login: builder.mutation<IUser & { accessToken: IAccessToken }, ILogin>({
-    //   query: (body) => ({
-    //     url: 'auth/login',
-    //     method: 'POST',
-    //     body: body,
-    //   }),
-    //   async onQueryStarted(_args, { dispatch, queryFulfilled }) {
-    //     try {
-    //       const { data } = await queryFulfilled;
-    //       dispatch(setUserAndToken(data));
-    //     } catch (error) {}
-    //   },
-    //   invalidatesTags: ['UserProfile'],
-    // }),
     logout: builder.mutation<void, void>({
       query: () => ({
         url: 'auth/logout',
