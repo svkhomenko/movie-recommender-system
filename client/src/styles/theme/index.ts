@@ -61,7 +61,7 @@ export const system = createSystem(defaultConfig, {
           subtle: { value: '{colors.accent.100}' },
           emphasized: { value: '{colors.accent.300}' },
           focusRing: { value: '{colors.accent.500}' },
-          hover: { value: '{colors.accent.600}' },
+          hover: { value: '{colors.accent.700}' },
         },
         neutral: {
           solid: { value: '{colors.neutral.600}' },
