@@ -45,7 +45,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
       error: {
         ...result.error,
         data: {
-          message: 'A server-side error occurred.',
+          detail: 'A server-side error occurred.',
         },
       },
     };
