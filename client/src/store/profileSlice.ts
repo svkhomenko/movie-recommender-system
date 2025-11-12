@@ -28,16 +28,16 @@ const profileSlice = createSlice({
       state.user = user;
     },
     setUserAndToken(state, { payload }) {
-      const { accessToken, ...user } = payload;
+      const { access_token, ...user } = payload;
       state.user = user;
-      state.accessToken = accessToken;
+      state.accessToken = access_token;
     },
     updateUser(state, { payload }) {
       Object.assign(state.user, payload);
     },
     setToken(state, { payload }) {
-      const { accessToken } = payload;
-      state.accessToken = accessToken;
+      const { access_token } = payload;
+      state.accessToken = access_token;
     },
     logout(state) {
       state.user = initialState.user;
