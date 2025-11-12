@@ -2,6 +2,7 @@ import { Box, Flex, Heading, HStack, IconButton, Link, Menu, Icon, Button, Porta
 import { useEffect, useRef } from 'react';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { Link as ReactRouterLink, NavLink, useNavigate } from 'react-router-dom';
+import NavbarAuth from './NavbarAuth';
 import styles from './header.styles';
 
 const links = [{ href: '/', label: 'Movies' }];
@@ -87,6 +88,7 @@ const Header = () => {
             ))}
           </HStack>
         </HStack>
+        <NavbarAuth />
       </Flex>
     </Box>
   );
