@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from exception_handler import register_exception_handlers
 
 load_dotenv()
 
@@ -19,6 +20,8 @@ app.add_middleware(
     allow_headers=["Content-Type", "Authorization", "Set-Cookie"],
     expose_headers=["X-Total-Count"],
 )
+
+register_exception_handlers(app)
 
 app.include_router(root_router)
 
