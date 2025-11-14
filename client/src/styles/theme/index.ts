@@ -61,7 +61,7 @@ export const system = createSystem(defaultConfig, {
         accent: {
           solid: { value: '{colors.accent.500}' },
           contrast: { value: '{colors.primaryText}' },
-          fg: { value: '{colors.accent.700}' },
+          fg: { value: '{colors.accent.600}' },
           muted: { value: '{colors.accent.200}' },
           subtle: { value: '{colors.accent.100}' },
           emphasized: { value: '{colors.accent.300}' },
