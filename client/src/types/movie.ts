@@ -1,25 +1,25 @@
 export type IGenreWithoutMovies = {
-  id: string;
+  id: number;
   name: string;
 };
 
 export type ICollectionWithoutMovies = {
-  id: string;
+  id: number;
   name: string;
 };
 
 export type IMovieCrewRoleEnum = 'cast' | 'director';
 
 export type ICrewWithoutMovies = {
-  id: string;
-  movie_id: string;
-  crew_id: string;
+  id: number;
+  movie_id: number;
+  crew_id: number;
   full_name: string;
   role: IMovieCrewRoleEnum;
 };
 
 export type IMovie = {
-  id: string;
+  id: number;
   title: string;
   overview: string;
   keywords: string;
@@ -41,6 +41,6 @@ export type IMovie = {
 };
 
 export type IMoviePoster = {
-  id: string;
+  id: number;
   poster_path: string;
 };

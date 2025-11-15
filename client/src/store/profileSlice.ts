@@ -3,7 +3,7 @@ import type { IRole } from '~/types/user';
 
 type IInitialState = {
   user: {
-    id: string | undefined;
+    id: number | undefined;
     email: string | undefined;
     role: IRole | undefined;
   };
