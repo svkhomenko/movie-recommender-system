@@ -1,4 +1,4 @@
-import { Card, Stack, Heading, Text, Flex, Image, IconButton, Icon } from '@chakra-ui/react';
+import { Card, Stack, Heading, Text, Flex, Image, Icon } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { useAppSelector } from '~/hooks/useAppSelector';
 import { useGetMovieQuery } from '~/store/api/movieSlice';
@@ -6,8 +6,8 @@ import { useGetMoviePosterPathQuery } from '~/store/tmdbApi/tmdbMoviePosterSlice
 import Layout from '~/components/Layout';
 import PageAlert from '~/components/PageAlert';
 import Loader from '~/components/Loader';
-import { Tooltip } from '~/components/ui/tooltip';
-import { FiStar, FiBookmark, FiEye } from 'react-icons/fi';
+import WatchButtons from './WatchButtons';
+import { FiStar } from 'react-icons/fi';
 import { getRealiseDate, getGenres, getCollections, getCrewNames } from '../helpers';
 import { IMAGE_BASE_URL, FALLBACK_IMAGE_URL } from '~/consts/images';
 import { type IError } from '~/types/error';
@@ -54,20 +54,7 @@ const MoviePage = () => {
                 {movie.title}
               </Heading>
 
-              {user.id && (
-                <Flex css={styles.icons}>
-                  <Tooltip content="Watch later">
-                    <IconButton aria-label="Watch later" size="md" variant="ghost">
-                      <FiBookmark />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip content="Watched">
-                    <IconButton aria-label="Watched" size="md" variant="ghost">
-                      <FiEye />
-                    </IconButton>
-                  </Tooltip>
-                </Flex>
-              )}
+              {user.id && <WatchButtons movie={movie} />}
             </Flex>
 
             <Flex flexDir="column" gap="1" py="2">
