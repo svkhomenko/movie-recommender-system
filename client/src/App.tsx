@@ -9,6 +9,7 @@ import SendPasswordConfirmation from './pages/Auth/SendPasswordConfirmation';
 import PasswordReset from './pages/Auth/PasswordReset';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProfileRoutes from './routes/ProfileRoutes';
+import MoviesRoutes from './routes/MoviesRoutes';
 
 function App() {
   return (
@@ -25,6 +26,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="profile/*" element={<ProfileRoutes />} />
         </Route>
+
+        <Route path="movies/*" element={<MoviesRoutes />} />
 
         <Route path="/*" element={<NotFound />} />
       </Route>
