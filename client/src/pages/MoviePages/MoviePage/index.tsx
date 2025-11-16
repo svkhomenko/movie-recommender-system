@@ -7,6 +7,7 @@ import Layout from '~/components/Layout';
 import PageAlert from '~/components/PageAlert';
 import Loader from '~/components/Loader';
 import WatchButtons from './WatchButtons';
+import RatingButton from './RatingButton';
 import { FiStar } from 'react-icons/fi';
 import { getRealiseDate, getGenres, getCollections, getCrewNames } from '../helpers';
 import { IMAGE_BASE_URL, FALLBACK_IMAGE_URL } from '~/consts/images';
@@ -57,7 +58,7 @@ const MoviePage = () => {
               {user.id && <WatchButtons movie={movie} />}
             </Flex>
 
-            <Flex flexDir="column" gap="1" py="2">
+            <Flex flexDir="column" gap="1">
               <Flex alignItems="center" gap="2">
                 <Icon as={FiStar} color="accent.solid" />
                 <Text fontSize="md" fontWeight="bold">
@@ -69,14 +70,7 @@ const MoviePage = () => {
                 </Text>
               </Flex>
 
-              {user.id && (
-                <>
-                  <Text fontSize="sm" color="neutral.muted">
-                    Your rating:
-                  </Text>
-                  <Flex gap="1"></Flex>
-                </>
-              )}
+              {user.id && <RatingButton movie={movie} />}
             </Flex>
 
             <Text css={styles.text}>

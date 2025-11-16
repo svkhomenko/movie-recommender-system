@@ -44,3 +44,7 @@ export type IMoviePoster = {
   id: number;
   poster_path: string;
 };
+
+export type IRating = {
+  rating: number;
+};

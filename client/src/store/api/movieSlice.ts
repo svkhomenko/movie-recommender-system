@@ -1,5 +1,5 @@
 import { apiSlice } from './apiSlice';
-import type { IMovie } from '~/types/movie';
+import type { IMovie, IRating } from '~/types/movie';
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -35,6 +35,21 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
     }),
+    createrMovieRating: builder.mutation<void, IRating & Pick<IMovie, 'id'>>({
+      query: ({ id, ...body }) => ({
+        url: `/movies/${id}/rating`,
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg.id }],
+    }),
+    deleteMovieRating: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/movies/${id}/rating`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+    }),
   }),
 });
 
@@ -44,4 +59,6 @@ export const {
   useRemoveMovieFromWatchLaterMutation,
   useAddMovieToWatchedMutation,
   useRemoveMovieFromWatchedMutation,
+  useCreaterMovieRatingMutation,
+  useDeleteMovieRatingMutation,
 } = extendedApiSlice;
