@@ -9,7 +9,7 @@ import styles from '../profile-card.styles';
 type IProps = { setIsEdit: React.Dispatch<React.SetStateAction<boolean>> };
 
 export const links = [
-  { href: '/profile/ratings', label: 'Ratings' },
+  { href: '/profile/own-rating', label: 'Ratings' },
   { href: '/profile/watch-later', label: 'Watch Later' },
   { href: '/profile/watched', label: 'Watched' },
   { href: '/profile/viewing-history', label: 'Viewing History' },

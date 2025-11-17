@@ -11,3 +11,15 @@ export const MOVIES_RESULT_TYPES = {
   OWN_RATING: 'own_rating' as IMoviesResultTypeEnum,
   VIEWING_HISTORY: 'viewing_history' as IMoviesResultTypeEnum,
 };
+
+export const HEADING_MAP = {
+  [MOVIES_RESULT_TYPES.BEST_RATING]: 'Top Rated Movies',
+  [MOVIES_RESULT_TYPES.NEW]: 'New Movies',
+  [MOVIES_RESULT_TYPES.POPULAR_NOW]: 'Popular Now Movies',
+  [MOVIES_RESULT_TYPES.CONTINUE_WATCHING]: 'Continue Watching Collection',
+  [MOVIES_RESULT_TYPES.RECOMMENDATIONS]: 'Recommended Movies',
+  [MOVIES_RESULT_TYPES.WATCH_LATER]: 'Watch Later Movies',
+  [MOVIES_RESULT_TYPES.WATCHED]: 'Watched Movies',
+  [MOVIES_RESULT_TYPES.OWN_RATING]: 'Rated Movies',
+  [MOVIES_RESULT_TYPES.VIEWING_HISTORY]: 'Viewing History',
+};

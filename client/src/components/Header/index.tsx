@@ -5,7 +5,11 @@ import { Link as ReactRouterLink, NavLink, useNavigate } from 'react-router-dom'
 import NavbarAuth from './NavbarAuth';
 import styles from './header.styles';
 
-const links = [{ href: '/', label: 'Movies' }];
+const links = [
+  { href: '/movies/best-rating', label: 'Top Rated' },
+  { href: '/movies/new', label: 'New Movies' },
+  { href: '/movies/popular-now', label: 'Popular Now' },
+];
 
 const Header = () => {
   const navigate = useNavigate();
@@ -73,20 +77,18 @@ const Header = () => {
             </Heading>
           </ReactRouterLink>
         </Box>
-        <HStack align="center" gap={6}>
-          <HStack as="nav" gap={6} display={{ base: 'none', md: 'flex' }} mr="50px">
-            {links.map((link) => (
-              <Link
-                asChild
-                key={link.label}
-                fontWeight="bold"
-                color="accent.subtle"
-                _hover={{ color: 'accent.emphasized' }}
-              >
-                <NavLink to={link.href}>{link.label}</NavLink>
-              </Link>
-            ))}
-          </HStack>
+        <HStack as="nav" gap={10} align="center" display={{ base: 'none', md: 'flex' }}>
+          {links.map((link) => (
+            <Link
+              asChild
+              key={link.label}
+              fontWeight="bold"
+              color="accent.subtle"
+              _hover={{ color: 'accent.emphasized' }}
+            >
+              <NavLink to={link.href}>{link.label}</NavLink>
+            </Link>
+          ))}
         </HStack>
         <NavbarAuth />
       </Flex>

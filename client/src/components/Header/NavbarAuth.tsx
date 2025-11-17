@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '~/hooks/useAppSelector';
 import useRequestHandler from '~/hooks/useRequestHandler';
 import { useLogoutMutation } from '~/store/api/authSlice';
-import { links } from '~/pages/Profile/ProfileInfo';
+import { links as ownListsLinks } from '~/pages/Profile/ProfileInfo';
+
+const moviesLinks = [
+  { href: '/movies/continue-watching', label: 'Continue Watching' },
+  { href: '/movies/recommendations', label: 'Recommended Movies' },
+];
 
 const NavbarAuth = () => {
   const navigate = useNavigate();
@@ -28,7 +33,16 @@ const NavbarAuth = () => {
               <Menu.Content>
                 <Menu.ItemGroup>
                   <Menu.ItemGroupLabel>Movies</Menu.ItemGroupLabel>
-                  {links.map((link) => (
+                  {moviesLinks.map((link) => (
+                    <Menu.Item key={link.href} value={link.href} px={4} py={2} onClick={() => navigate(link.href)}>
+                      {link.label}
+                    </Menu.Item>
+                  ))}
+                </Menu.ItemGroup>
+                <Menu.Separator />
+                <Menu.ItemGroup>
+                  <Menu.ItemGroupLabel>Your Lists</Menu.ItemGroupLabel>
+                  {ownListsLinks.map((link) => (
                     <Menu.Item key={link.href} value={link.href} px={4} py={2} onClick={() => navigate(link.href)}>
                       {link.label}
                     </Menu.Item>
