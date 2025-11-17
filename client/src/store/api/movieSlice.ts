@@ -26,28 +26,28 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         url: `/movies/${id}/watch_later`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
     removeMovieFromWatchLater: builder.mutation<void, number>({
       query: (id) => ({
         url: `/movies/${id}/watch_later`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
     addMovieToWatched: builder.mutation<void, number>({
       query: (id) => ({
         url: `/movies/${id}/watched`,
         method: 'POST',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
     removeMovieFromWatched: builder.mutation<void, number>({
       query: (id) => ({
         url: `/movies/${id}/watched`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
     createrMovieRating: builder.mutation<void, IRating & Pick<IMovie, 'id'>>({
       query: ({ id, ...body }) => ({
@@ -55,14 +55,14 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         method: 'POST',
         body,
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg.id }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg.id }],
     }),
     deleteMovieRating: builder.mutation<void, number>({
       query: (id) => ({
         url: `/movies/${id}/rating`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
   }),
 });
