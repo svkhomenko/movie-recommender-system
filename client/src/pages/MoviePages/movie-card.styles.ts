@@ -45,4 +45,44 @@ const styles: StylesType = {
   },
 };
 
+export const stylesMediumCard: StylesType = {
+  card: {
+    w: '100%',
+    maxW: '300px',
+    boxShadow: 'rgba(19, 29, 54, 0.4) 0px 5px 20px',
+    backgroundColor: 'cardBg',
+    border: 'none',
+    p: '10px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    gap: '2',
+  },
+  image: {
+    w: '100%',
+    maxW: '200px',
+    h: 'auto',
+    objectFit: 'cover',
+    borderRadius: 'md',
+  },
+  heading: {
+    color: 'accent.solid',
+    fontSize: 'md',
+    fontWeight: 'bold',
+    lineClamp: 2,
+  },
+  icons: {
+    mr: '-15px',
+    gap: 1,
+  },
+  text: {
+    fontSize: 'sm',
+    '& span': {
+      color: 'neutral.muted',
+    },
+    lineClamp: 1,
+  },
+};
+
 export default styles;
