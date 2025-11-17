@@ -18,7 +18,7 @@ export type ICrewWithoutMovies = {
   role: IMovieCrewRoleEnum;
 };
 
-export type IMovie = {
+export type IMovieFromList = {
   id: number;
   title: string;
   overview: string;
@@ -31,7 +31,9 @@ export type IMovie = {
 
   genres: IGenreWithoutMovies[];
   collections: ICollectionWithoutMovies[];
+};
 
+export type IMovie = IMovieFromList & {
   rating?: number;
   watch_later?: boolean;
   watched?: boolean;
@@ -47,4 +49,30 @@ export type IMoviePoster = {
 
 export type IRating = {
   rating: number;
+};
+
+export type IMoviesResponse = {
+  movies: IMovieFromList[];
+  totalCount: number;
+};
+
+export type IMoviesResultTypeEnum =
+  | 'best_rating'
+  | 'new'
+  | 'popular_now'
+  | 'continue_watching'
+  | 'recommendations'
+  | 'watch_later'
+  | 'watched'
+  | 'own_rating'
+  | 'viewing_history';
+
+export type IMoviesParams = {
+  limit?: number;
+  offset?: number;
+  q?: string;
+  year_min?: number;
+  year_max?: number;
+  genre_ids?: number[];
+  result_type?: IMoviesResultTypeEnum;
 };

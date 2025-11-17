@@ -1,8 +1,22 @@
 import { apiSlice } from './apiSlice';
-import type { IMovie, IRating } from '~/types/movie';
+import type { IMovie, IRating, IMoviesResponse, IMoviesParams, IMovieFromList } from '~/types/movie';
+import { prepareSearchParams } from './prepareSearchParams';
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    getMovies: builder.query<IMoviesResponse, IMoviesParams>({
+      query: (queryParams) => ({
+        url: '/movies',
+        params: prepareSearchParams(queryParams),
+      }),
+      transformResponse(movies: IMovieFromList[], meta: any) {
+        return { movies, totalCount: Number(meta.response.headers.get('X-Total-Count')) };
+      },
+      providesTags: (result) => {
+        const movies = result?.movies || [];
+        return ['Movie', ...movies.map(({ id }: Pick<IMovie, 'id'>) => ({ type: 'Movie' as const, id }))];
+      },
+    }),
     getMovie: builder.query<IMovie, number>({
       query: (id) => `/movies/${id}`,
       providesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
@@ -54,6 +68,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
+  useGetMoviesQuery,
   useGetMovieQuery,
   useAddMovieToWatchLaterMutation,
   useRemoveMovieFromWatchLaterMutation,
