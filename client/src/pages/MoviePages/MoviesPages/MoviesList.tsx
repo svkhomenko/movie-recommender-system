@@ -3,7 +3,7 @@ import { Flex, Heading, Grid, ButtonGroup, IconButton, Pagination } from '@chakr
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import Container from '~/components/Container';
 import PageAlert from '~/components/PageAlert';
-import Loader from '~/components/Loader';
+import MovieCardSkeleton from '~/components/MovieCardSkeleton/MovieCardSkeleton';
 import MovieCard from './MovieCard';
 import { useGetMoviesQuery } from '~/store/api/movieSlice';
 import type { IMoviesParams, IMoviesResultTypeEnum } from '~/types/movie';
@@ -45,7 +45,11 @@ const MoviesList = ({ q, yearMin, yearMax, genreIds, resultType = MOVIES_RESULT_
   return (
     <Container>
       {isFetching ? (
-        <Loader />
+        <>
+          {Array(itemsPerPage).map((_, i) => (
+            <MovieCardSkeleton key={i} />
+          ))}
+        </>
       ) : data?.movies.length ? (
         <Grid
           templateColumns={{

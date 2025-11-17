@@ -1,7 +1,7 @@
 import { Card, Stack, Heading, Text, Flex, Image, Icon, GridItem } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { useGetMoviePosterPathQuery } from '~/store/tmdbApi/tmdbMoviePosterSlice';
-import Loader from '~/components/Loader';
+import MovieCardSkeleton from '~/components/MovieCardSkeleton/MovieCardSkeleton';
 import { FiStar } from 'react-icons/fi';
 import { getRealiseDate, getGenres } from '../helpers';
 import { IMAGE_BASE_URL, FALLBACK_IMAGE_URL } from '~/consts/images';
@@ -16,7 +16,7 @@ const MovieCard = ({ movie }: IProps) => {
   const { data: moviePoster, isLoading: isLoadingPoster } = useGetMoviePosterPathQuery(Number(movie.id));
 
   if (isLoadingPoster) {
-    return <Loader />;
+    return <MovieCardSkeleton />;
   }
 
   return (

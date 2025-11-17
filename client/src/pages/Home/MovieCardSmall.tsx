@@ -1,6 +1,7 @@
-import { Card, Stack, Heading, Text, Flex, Image, Icon, Spinner, Box } from '@chakra-ui/react';
+import { Card, Stack, Heading, Text, Flex, Image, Icon, Box } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { useGetMoviePosterPathQuery } from '~/store/tmdbApi/tmdbMoviePosterSlice';
+import MovieCardSmallSkeleton from '~/components/MovieCardSkeleton/MovieCardSmallSkeleton';
 import { FiStar } from 'react-icons/fi';
 import { getRealiseDate, getGenres } from '~/pages/MoviePages/helpers';
 import { IMAGE_BASE_URL, FALLBACK_IMAGE_URL } from '~/consts/images';
@@ -15,13 +16,7 @@ const MovieCardSmall = ({ movie }: IProps) => {
   const { data: moviePoster, isLoading: isLoadingPoster } = useGetMoviePosterPathQuery(Number(movie.id));
 
   if (isLoadingPoster) {
-    return (
-      <Card.Root css={styles.card}>
-        <Flex w="100%" h="100%" align="center" justify="center">
-          <Spinner size="md" />
-        </Flex>
-      </Card.Root>
-    );
+    return <MovieCardSmallSkeleton />;
   }
 
   return (
