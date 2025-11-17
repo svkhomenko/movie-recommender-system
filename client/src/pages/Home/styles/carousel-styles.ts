@@ -6,6 +6,7 @@ type StylesType = {
 
 export const styles: StylesType = {
   box: {
+    mb: '20px',
     '& .movie-slider': {
       '--swiper-theme-color': '#f9bc85',
     },
