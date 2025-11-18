@@ -55,6 +55,9 @@ class Movie(SQLModel, table=True):
         back_populates="movies", link_model=MovieCollection
     )
 
+    def __str__(self):
+        return f"Movie(id={self.id}, title='{self.title}')"
+
 
 class MoviePublic(SQLModel):
     id: int
