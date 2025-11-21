@@ -1,25 +1,16 @@
 import pandas as pd
-from pathlib import Path
 from sqlmodel import Session, select
 import models
 
 
-def fetch_ratings_data(session: Session):
-    statement = select(models.Rating)
-    ratings = session.exec(statement).all()
+def fetch_ratings_data(session: Session) -> pd.DataFrame:
+    result = session.exec(
+        select(models.Rating.user_id, models.Rating.movie_id, models.Rating.rating)
+    )
 
-    ratings_data = []
-
-    for rating in ratings:
-        ratings_data.append(
-            {
-                "user_id": rating.user_id,
-                "movie_id": rating.movie_id,
-                "rating": rating.rating,
-            }
-        )
-
-    return pd.DataFrame(ratings_data)
+    ratings_tuples = result.all()
+    ratings_df = pd.DataFrame(ratings_tuples, columns=["user_id", "movie_id", "rating"])
+    return ratings_df
 
 
 def get_average_user_rating_for_movies_cluster(movies_df, ratings_df):
