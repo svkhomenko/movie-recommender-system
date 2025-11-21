@@ -45,7 +45,15 @@ const styles: StylesType = {
   },
 };
 
-export const stylesMediumCard: StylesType = {
+type StylesTypeMediumCard = {
+  card: SystemStyleObject;
+  image: SystemStyleObject;
+  heading: SystemStyleObject;
+  text: SystemStyleObject;
+  explanationBadge: SystemStyleObject;
+};
+
+export const stylesMediumCard: StylesTypeMediumCard = {
   card: {
     w: '100%',
     maxW: '300px',
@@ -72,16 +80,27 @@ export const stylesMediumCard: StylesType = {
     fontWeight: 'bold',
     lineClamp: 2,
   },
-  icons: {
-    mr: '-15px',
-    gap: 1,
-  },
   text: {
     fontSize: 'sm',
     '& span': {
       color: 'neutral.muted',
     },
     lineClamp: 1,
+  },
+  explanationBadge: {
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
+    zIndex: 10,
+    padding: '4px 8px',
+    fontSize: 'md',
+    fontWeight: 'semibold',
+    color: 'white',
+    backgroundColor: 'accent.hover',
+    opacity: 0.7,
+    borderRadius: 'sm',
+    backdropFilter: 'blur(3px)',
+    textTransform: 'none',
   },
 };
 

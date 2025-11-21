@@ -1,4 +1,4 @@
-import { Card, Stack, Heading, Text, Flex, Image, Icon, GridItem } from '@chakra-ui/react';
+import { Card, Stack, Heading, Text, Flex, Image, Icon, GridItem, Badge } from '@chakra-ui/react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { useGetMoviePosterPathQuery } from '~/store/tmdbApi/tmdbMoviePosterSlice';
 import MovieCardSkeleton from '~/components/MovieCardSkeleton/MovieCardSkeleton';
@@ -23,6 +23,8 @@ const MovieCard = ({ movie }: IProps) => {
     <ReactRouterLink to={`/movies/${movie.id}`}>
       <GridItem>
         <Card.Root css={stylesMediumCard.card}>
+          {movie.explanation && <Badge css={stylesMediumCard.explanationBadge}>{movie.explanation}</Badge>}
+
           <Image
             src={IMAGE_BASE_URL + moviePoster?.poster_path}
             alt={movie.title}
