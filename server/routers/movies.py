@@ -25,7 +25,10 @@ router = APIRouter(prefix="/movies", tags=["movies"])
 @router.get(
     "/",
     response_model=list[MoviePublic],
-    responses={401: {"description": "The access token is invalid or has expired"}},
+    responses={
+        401: {"description": "The access token is invalid or has expired"},
+        500: {"description": "The recommendation system is not initialized"},
+    },
 )
 async def get_movies(
     query: Annotated[MoviePublicFilterSearchParams, Query()],
@@ -33,7 +36,10 @@ async def get_movies(
     response: Response,
     cur_user: CurrentUserForPersonalListsDep,
 ):
-    where = MovieService.get_where_options(query, cur_user)
+    if query.result_type == MoviePublicResultType.RECOMMENDATIONS and cur_user:
+        recommendations_ids = MovieService.get_recommendations_ids(cur_user)
+
+    where = MovieService.get_where_options(query, cur_user, recommendations_ids)
     order_by = MovieService.get_order_by_options(query)
 
     GenresAttr = cast(InstrumentedAttribute, Movie.genres)
@@ -52,6 +58,11 @@ async def get_movies(
     if query.result_type == MoviePublicResultType.CONTINUE_WATCHING and cur_user:
         return MovieService.get_continue_watching_movies(
             session, order_by, query, subquery_ids, cur_user
+        )
+
+    if query.result_type == MoviePublicResultType.RECOMMENDATIONS and cur_user:
+        return MovieService.get_recommended_movies(
+            session, query, subquery_ids, recommendations_ids
         )
 
     if query.result_type == MoviePublicResultType.WATCH_LATER and cur_user:

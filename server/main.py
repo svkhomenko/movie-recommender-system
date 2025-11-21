@@ -8,6 +8,7 @@ from sqladmin import Admin
 from database import engine
 from admin import auth
 from admin.models import user, genre, collection, crew, movie, movie_crew
+import recommender.recommender
 
 load_dotenv()
 

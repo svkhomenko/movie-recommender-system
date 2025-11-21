@@ -1,5 +1,5 @@
 from fastapi import status, HTTPException
-from sqlmodel import Session, select, func, or_, desc, col, and_
+from sqlmodel import Session, select, func, or_, desc, col, and_, case
 from sqlalchemy.sql import Subquery
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql.expression import literal
@@ -18,10 +18,13 @@ from models.movie_collection import MovieCollection
 from models.watched import Watched
 from models.watch_later import WatchLater
 from models.rating import Rating
+from recommender.recommender import RECOMMENDER_INSTANCE
 
 
 def get_where_options(
-    params: MoviePublicFilterSearchParams, cur_user: User | None
+    params: MoviePublicFilterSearchParams,
+    cur_user: User | None,
+    recommendations_ids: list[int],
 ) -> list[Any]:
     where = []
 
@@ -72,6 +75,9 @@ def get_where_options(
             where.append(
                 col(Movie.id).not_in(select(watched_movie_ids_subquery.c.movie_id))
             )
+
+    if params.result_type == MoviePublicResultType.RECOMMENDATIONS:
+        where.append(col(Movie.id).in_(recommendations_ids))
 
     if params.result_type == MoviePublicResultType.WATCH_LATER:
         if cur_user:
@@ -189,6 +195,45 @@ def get_continue_watching_movies(
     ).all()
 
     return [movie for movie, _ in results]
+
+
+def get_recommendations_ids(cur_user: User):
+    if not RECOMMENDER_INSTANCE.is_ready():
+        raise HTTPException(
+            status_code=500, detail="The recommendation system is not initialized"
+        )
+
+    if cur_user.id:
+        recommendations_ids = RECOMMENDER_INSTANCE.get_recommendations(cur_user.id, 500)
+
+    return recommendations_ids or []
+
+
+def get_recommended_movies(
+    session: Session,
+    query: MoviePublicFilterSearchParams,
+    subquery_ids: Subquery,
+    recommendations_ids: list[int],
+):
+    case_statements = [
+        (Movie.id == recommendations_id, index)
+        for index, recommendations_id in enumerate(recommendations_ids)
+    ]
+    ordering_case = case(
+        *case_statements,
+        else_=-1,
+    )
+
+    movies = session.exec(
+        select(Movie)
+        .where(col(Movie.id).in_(select(subquery_ids.c.id)))
+        .order_by(ordering_case)
+        .limit(query.limit)
+        .offset(query.offset)
+        .distinct()
+    ).all()
+
+    return movies
 
 
 def get_watch_later_movies(
