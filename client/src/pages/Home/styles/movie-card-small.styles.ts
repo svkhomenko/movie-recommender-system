@@ -6,6 +6,7 @@ type StylesType = {
   infoOverlay: SystemStyleObject;
   heading: SystemStyleObject;
   text: SystemStyleObject;
+  explanationBadge: SystemStyleObject;
 };
 
 export const styles: StylesType = {
@@ -62,6 +63,21 @@ export const styles: StylesType = {
       color: 'neutral.muted',
     },
     textAlign: 'left',
+  },
+  explanationBadge: {
+    position: 'absolute',
+    top: '10px',
+    left: '10px',
+    zIndex: 10,
+    padding: '4px 8px',
+    fontSize: 'xs',
+    fontWeight: 'semibold',
+    color: 'white',
+    backgroundColor: 'accent.hover',
+    opacity: 0.7,
+    borderRadius: 'sm',
+    backdropFilter: 'blur(3px)',
+    textTransform: 'none',
   },
 };
 
