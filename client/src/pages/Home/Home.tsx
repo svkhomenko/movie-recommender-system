@@ -18,9 +18,10 @@ const Home = () => {
 
   return (
     <>
-      {user.id && carouselUserTypes.map((type) => <MoviesCarousel resultType={type.type} href={type.href} />)}
+      {user.id &&
+        carouselUserTypes.map((type) => <MoviesCarousel key={type.href} resultType={type.type} href={type.href} />)}
       {carouselTypes.map((type) => (
-        <MoviesCarousel resultType={type.type} href={type.href} />
+        <MoviesCarousel key={type.href} resultType={type.type} href={type.href} />
       ))}
     </>
   );
