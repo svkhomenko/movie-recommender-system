@@ -34,6 +34,7 @@ def prepare_models():
             optimal_svd_movie,
         ) = vectorization(movies_df)
         print("Successfully created vectorization models")
+        np.save(ARTIFACTS_DIR / "normalized_features.npy", normalized_combined_features)
         doc2vec_model.save(str(ARTIFACTS_DIR / "doc2vec_model.model"))
         joblib.dump(count_vectorizer, ARTIFACTS_DIR / "cv_model.pkl")
         joblib.dump(optimal_svd_movie, ARTIFACTS_DIR / "svd_movie_model.pkl")
