@@ -36,8 +36,11 @@ async def get_movies(
     response: Response,
     cur_user: CurrentUserForPersonalListsDep,
 ):
+    recommendations_ids: list[int] = []
     if query.result_type == MoviePublicResultType.RECOMMENDATIONS and cur_user:
-        recommendations_ids = MovieService.get_recommendations_ids(cur_user)
+        recommendations_ids, recommendations_df = (
+            MovieService.get_recommendations_ids_and_df(cur_user)
+        )
 
     where = MovieService.get_where_options(query, cur_user, recommendations_ids)
     order_by = MovieService.get_order_by_options(query)
@@ -62,7 +65,7 @@ async def get_movies(
 
     if query.result_type == MoviePublicResultType.RECOMMENDATIONS and cur_user:
         return MovieService.get_recommended_movies(
-            session, query, subquery_ids, recommendations_ids
+            session, query, subquery_ids, recommendations_ids, recommendations_df
         )
 
     if query.result_type == MoviePublicResultType.WATCH_LATER and cur_user:

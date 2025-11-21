@@ -69,6 +69,7 @@ class MoviePublic(SQLModel):
     vote_average: float
     vote_count: int
     latest_viewed_at: datetime | None = Field(default=None)
+    explanation: str | None = Field(default=None)
 
     genres: list["GenreWithoutMovies"] = []
     collections: list["CollectionWithoutMovies"] = []

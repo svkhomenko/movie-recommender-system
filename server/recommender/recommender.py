@@ -9,9 +9,13 @@ from skfuzzy import control as ctrl
 from sqlmodel import Session, select, col, func
 from database import engine
 from .prepare_models.average_user_rating import fetch_ratings_data
-from typing import Tuple
+from typing import Tuple, Sequence
 from datetime import datetime, timedelta
 import models
+from models.movie import MoviePublic
+import io
+import sys
+import re
 
 ARTIFACTS_DIR = Path(__file__).parent.parent / "artifacts"
 K_NEIGHBORS = 50
@@ -325,8 +329,10 @@ class Recommender:
             )
         )
 
-        relevance_system_ctrl = ctrl.ControlSystem(rules)
-        self.relevance_simulation = ctrl.ControlSystemSimulation(relevance_system_ctrl)
+        self.relevance_system_ctrl = ctrl.ControlSystem(rules)
+        self.relevance_simulation = ctrl.ControlSystemSimulation(
+            self.relevance_system_ctrl
+        )
 
     def _create_movies_features_df(self):
         features_df = (
@@ -736,27 +742,149 @@ class Recommender:
         )
         return final_recommendations
 
+    def _generate_fuzzy_result_explanation(self, rule_description):
+        mapping = {
+            "INP1_CosineSimilarity[very_high]": "similar to your taste",
+            "INP1_CosineSimilarity[high]": "similar to your taste",
+            "INP2_ViewingHistory[very_recently]": "viewed recently",
+            "INP2_ViewingHistory[recently]": "viewed recently",
+            "INP3_Collection[very_recently]": "in your series",
+            "INP3_Collection[recently]": "in your series",
+            "INP4_WatchLater[yes]": "Watch Later item",
+            "INP5_AvgRating[high]": "high rating",
+        }
+
+        antecedent = rule_description.split(" THEN ")[0].replace("IF ", "")
+        term_matches = re.findall(r"(\w+\[\w+\])", antecedent)
+        explanations = []
+
+        for term in term_matches:
+            explanation = mapping.get(term)
+            if explanation:
+                explanations.append(explanation)
+
+        if not explanations:
+            return None
+
+        if len(explanations) == 1:
+            return explanations[0].capitalize()
+
+        if len(explanations) > 1:
+            unique_explanations = sorted(list(set(explanations)))
+
+            result = ", ".join(unique_explanations[:-1])
+            return result.capitalize()
+
+        return None
+
+    def _get_top_activated_rules_explanation(self, fis_data_row):
+        input_names = [
+            "INP1_CosineSimilarity",
+            "INP2_ViewingHistory",
+            "INP3_Collection",
+            "INP4_WatchLater",
+            "INP5_AvgRating",
+        ]
+        inputs = {name: fis_data_row[name] for name in input_names}
+
+        try:
+            for name, value in inputs.items():
+                self.relevance_simulation.input[name] = value
+            self.relevance_simulation.compute()
+        except Exception:
+            return None
+
+        old_stdout = sys.stdout
+        new_stdout = io.StringIO()
+        sys.stdout = new_stdout
+        self.relevance_simulation.print_state()
+        sys.stdout = old_stdout
+        output_text = new_stdout.getvalue()
+
+        activated_rules = []
+        rules_list = self.relevance_system_ctrl.rules
+
+        for rule_index, rule_object in enumerate(rules_list):
+            rule_description = (
+                f"IF {rule_object.antecedent} THEN {rule_object.consequent}"
+            )
+
+            rule_blocks = re.split(r"RULE #\d+:", output_text)[1:]
+
+            if rule_index < len(rule_blocks):
+                block = rule_blocks[rule_index]
+                activation_match = re.search(
+                    r"Activation \(THEN-clause\):.*?(\d+\.\d+)", block, re.DOTALL
+                )
+
+                strength = 0.0
+                if activation_match:
+                    try:
+                        strength = float(activation_match.group(1))
+                    except ValueError:
+                        strength = 0.0
+
+                is_high_relevance = (
+                    "OUT1_Relevance[high]" in rule_description
+                    or "OUT1_Relevance[very_high]" in rule_description
+                )
+
+                if strength > 0.5 and is_high_relevance:
+                    activated_rules.append((strength, rule_description))
+
+        if not activated_rules:
+            return None
+
+        activated_rules.sort(key=lambda x: x[0], reverse=True)
+        top_rule_description = activated_rules[0][1]
+
+        return self._generate_fuzzy_result_explanation(top_rule_description)
+
+    def get_recommendations_explanation(
+        self, movies: Sequence[models.Movie], recommendations_df: pd.DataFrame
+    ):
+        movies_public: list[MoviePublic] = []
+        for movie in movies:
+            try:
+                fis_data_row = recommendations_df[
+                    recommendations_df["movie_id"] == movie.id
+                ].iloc[0]
+                if fis_data_row["OUT1_Relevance"] > 0.5:
+                    explanation = self._get_top_activated_rules_explanation(
+                        fis_data_row
+                    )
+            except ValueError:
+                explanation = None
+
+            movie_data = movie.model_dump()
+            movie_data["genres"] = movie.genres
+            movie_data["explanation"] = explanation
+            movie_data["collections"] = movie.collections
+            movies_public.append(MoviePublic(**movie_data))
+
+        return movies_public
+
     def get_recommendations(
         self, cur_user_id: int, num_recommendations: int = 50
-    ) -> list[int]:
+    ) -> Tuple[list[int], pd.DataFrame]:
         if not self.is_ready():
             print(
                 "The recommendation system is not ready. The artifacts are not loaded"
             )
-            return []
+            return [], pd.DataFrame()
 
         user_cluster_index = self._get_user_cluster_index(cur_user_id)
 
         if user_cluster_index is None:
-            return []
+            return [], pd.DataFrame()
 
         neighbors = self._find_weighted_neighbors(cur_user_id)
         if not neighbors:
-            return []
+            return [], pd.DataFrame()
 
         candidate_movies_ids = self._get_candidate_movies_ids(cur_user_id, neighbors)
         if len(candidate_movies_ids) == 0:
-            return []
+            return [], pd.DataFrame()
 
         final_candidates_for_fis = self._get_final_candidates_for_fis(
             cur_user_id, neighbors, candidate_movies_ids
@@ -766,7 +894,9 @@ class Recommender:
             cur_user_id, final_candidates_for_fis
         )
         recommendation_list = final_candidates_df["movie_id"].tolist()
-        return recommendation_list[:num_recommendations]
+        return recommendation_list[:num_recommendations], final_candidates_df.head(
+            num_recommendations
+        )
 
 
 RECOMMENDER_INSTANCE = Recommender()

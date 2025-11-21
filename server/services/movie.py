@@ -19,6 +19,7 @@ from models.watched import Watched
 from models.watch_later import WatchLater
 from models.rating import Rating
 from recommender.recommender import RECOMMENDER_INSTANCE
+import pandas as pd
 
 
 def get_where_options(
@@ -197,16 +198,18 @@ def get_continue_watching_movies(
     return [movie for movie, _ in results]
 
 
-def get_recommendations_ids(cur_user: User):
+def get_recommendations_ids_and_df(cur_user: User):
     if not RECOMMENDER_INSTANCE.is_ready():
         raise HTTPException(
             status_code=500, detail="The recommendation system is not initialized"
         )
 
     if cur_user.id:
-        recommendations_ids = RECOMMENDER_INSTANCE.get_recommendations(cur_user.id, 500)
+        recommendations_ids, recommendations_df = (
+            RECOMMENDER_INSTANCE.get_recommendations(cur_user.id, 500)
+        )
 
-    return recommendations_ids or []
+    return (recommendations_ids or [], recommendations_df)
 
 
 def get_recommended_movies(
@@ -214,7 +217,13 @@ def get_recommended_movies(
     query: MoviePublicFilterSearchParams,
     subquery_ids: Subquery,
     recommendations_ids: list[int],
+    recommendations_df: pd.DataFrame,
 ):
+    if not RECOMMENDER_INSTANCE.is_ready():
+        raise HTTPException(
+            status_code=500, detail="The recommendation system is not initialized"
+        )
+
     case_statements = [
         (Movie.id == recommendations_id, index)
         for index, recommendations_id in enumerate(recommendations_ids)
@@ -233,7 +242,9 @@ def get_recommended_movies(
         .distinct()
     ).all()
 
-    return movies
+    return RECOMMENDER_INSTANCE.get_recommendations_explanation(
+        movies, recommendations_df
+    )
 
 
 def get_watch_later_movies(
