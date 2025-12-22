@@ -2,6 +2,7 @@ import { Card, Stack, Heading, Text, Flex, Image, Icon, GridItem, Badge } from '
 import { Link as ReactRouterLink } from 'react-router-dom';
 import { useGetMoviePosterPathQuery } from '~/store/tmdbApi/tmdbMoviePosterSlice';
 import MovieCardSkeleton from '~/components/MovieCardSkeleton/MovieCardSkeleton';
+import ViewingHistoryButton from './ViewingHistoryButton';
 import { FiStar } from 'react-icons/fi';
 import { getRealiseDate, getGenres } from '../helpers';
 import { IMAGE_BASE_URL, FALLBACK_IMAGE_URL } from '~/consts/images';
@@ -12,6 +13,14 @@ type IProps = {
   movie: IMovieFromList;
 };
 
+const DateFormatOptions = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+} as const;
+
 const MovieCard = ({ movie }: IProps) => {
   const { data: moviePoster, isLoading: isLoadingPoster } = useGetMoviePosterPathQuery(Number(movie.id));
 
@@ -19,11 +28,22 @@ const MovieCard = ({ movie }: IProps) => {
     return <MovieCardSkeleton />;
   }
 
+  let latestViewedAt = '';
+  if (movie.latest_viewed_at) {
+    latestViewedAt = new Intl.DateTimeFormat('en-GB', DateFormatOptions).format(new Date(movie.latest_viewed_at));
+  }
+
   return (
     <ReactRouterLink to={`/movies/${movie.id}`}>
       <GridItem>
         <Card.Root css={stylesMediumCard.card}>
           {movie.explanation && <Badge css={stylesMediumCard.explanationBadge}>{movie.explanation}</Badge>}
+          {movie.latest_viewed_at && (
+            <>
+              <Badge css={stylesMediumCard.explanationBadge}>{latestViewedAt}</Badge>
+              <ViewingHistoryButton movie={movie} />
+            </>
+          )}
 
           <Image
             src={IMAGE_BASE_URL + moviePoster?.poster_path}

@@ -51,11 +51,13 @@ type StylesTypeMediumCard = {
   heading: SystemStyleObject;
   text: SystemStyleObject;
   explanationBadge: SystemStyleObject;
+  viewingHistoryButton: SystemStyleObject;
 };
 
 export const stylesMediumCard: StylesTypeMediumCard = {
   card: {
     w: '100%',
+    minW: '220px',
     maxW: '300px',
     boxShadow: 'rgba(19, 29, 54, 0.4) 0px 5px 20px',
     backgroundColor: 'cardBg',
@@ -101,6 +103,12 @@ export const stylesMediumCard: StylesTypeMediumCard = {
     borderRadius: 'sm',
     backdropFilter: 'blur(3px)',
     textTransform: 'none',
+  },
+  viewingHistoryButton: {
+    position: 'absolute',
+    top: '3px',
+    right: '10px',
+    zIndex: 10,
   },
 };
 

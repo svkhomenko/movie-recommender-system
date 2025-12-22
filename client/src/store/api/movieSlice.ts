@@ -64,6 +64,13 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
     }),
+    removeMovieFromViewingHistory: builder.mutation<void, number>({
+      query: (id) => ({
+        url: `/movies/${id}/viewing_history`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
+    }),
   }),
 });
 
@@ -76,4 +83,5 @@ export const {
   useRemoveMovieFromWatchedMutation,
   useCreaterMovieRatingMutation,
   useDeleteMovieRatingMutation,
+  useRemoveMovieFromViewingHistoryMutation,
 } = extendedApiSlice;

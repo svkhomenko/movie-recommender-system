@@ -27,7 +27,7 @@ export type IMovieFromList = {
   poster_path: string;
   vote_average: number;
   vote_count: number;
-  latest_viewed_at?: Date;
+  latest_viewed_at?: string;
   explanation?: string;
 
   genres: IGenreWithoutMovies[];

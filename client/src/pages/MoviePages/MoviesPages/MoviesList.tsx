@@ -56,14 +56,7 @@ const MoviesList = ({ q, yearMin, yearMax, genreIds, resultType = MOVIES_RESULT_
           <Heading size="lg">No movies found</Heading>
         </Flex>
       ) : (
-        <Grid
-          templateColumns={{
-            base: 'repeat(auto-fit, minmax(200px, 1fr))',
-            md: 'repeat(auto-fit, minmax(220px, 1fr))',
-          }}
-          gap={6}
-          p={{ base: '10px 20px', md: '20px 30px' }}
-        >
+        <Grid templateColumns="repeat(auto-fit, minmax(220px, 1fr))" gap={6} p={{ base: '10px 20px', md: '20px 30px' }}>
           {content}
         </Grid>
       )}
