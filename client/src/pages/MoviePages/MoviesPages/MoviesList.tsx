@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Flex, Heading, Grid, ButtonGroup, IconButton, Pagination } from '@chakra-ui/react';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu';
 import Container from '~/components/Container';
@@ -42,15 +42,20 @@ const MoviesList = ({ q, yearMin, yearMax, genreIds, resultType = MOVIES_RESULT_
     return <PageAlert status="error" message={(error as IError).data.detail} />;
   }
 
+  let content: ReactNode;
+  if (isFetching) {
+    content = Array.from({ length: itemsPerPage }).map((_, i) => <MovieCardSkeleton key={i} />);
+  } else if (data?.movies.length) {
+    content = data?.movies.map((movie) => <MovieCard key={movie.id} movie={movie} />);
+  }
+
   return (
     <Container>
-      {isFetching ? (
-        <>
-          {Array(itemsPerPage).map((_, i) => (
-            <MovieCardSkeleton key={i} />
-          ))}
-        </>
-      ) : data?.movies.length ? (
+      {!isFetching && data?.movies.length == 0 ? (
+        <Flex w="100%" alignItems="center" justifyContent="center" mt="40px">
+          <Heading size="lg">No movies found</Heading>
+        </Flex>
+      ) : (
         <Grid
           templateColumns={{
             base: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -59,15 +64,10 @@ const MoviesList = ({ q, yearMin, yearMax, genreIds, resultType = MOVIES_RESULT_
           gap={6}
           p={{ base: '10px 20px', md: '20px 30px' }}
         >
-          {data?.movies.map((movie) => (
-            <MovieCard key={movie.id} movie={movie} />
-          ))}
+          {content}
         </Grid>
-      ) : (
-        <Flex w="100%" alignItems="center" justifyContent="center" mt="40px">
-          <Heading size="lg">No movies found</Heading>
-        </Flex>
       )}
+
       <Flex w="100%" alignItems="center" justifyContent="center" py="40px">
         {!isFetching && data?.movies.length !== 0 && (
           <Pagination.Root
