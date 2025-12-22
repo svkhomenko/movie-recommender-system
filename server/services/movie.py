@@ -206,7 +206,7 @@ def get_recommendations_ids_and_df(cur_user: User):
 
     if cur_user.id:
         recommendations_ids, recommendations_df = (
-            RECOMMENDER_INSTANCE.get_recommendations(cur_user.id, 500)
+            RECOMMENDER_INSTANCE.get_recommendations(cur_user.id, 100)
         )
 
     return (recommendations_ids or [], recommendations_df)

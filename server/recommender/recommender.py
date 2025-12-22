@@ -19,7 +19,8 @@ import re
 
 ARTIFACTS_DIR = Path(__file__).parent.parent / "artifacts"
 K_NEIGHBORS = 50
-TOP_N_FOR_FIS = 600
+# TOP_N_FOR_FIS = 600
+TOP_N_FOR_FIS = 200
 
 
 class Recommender:
