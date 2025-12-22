@@ -1,6 +1,7 @@
 import { apiSlice } from './apiSlice';
 import type { IMovie, IRating, IMoviesResponse, IMoviesParams, IMovieFromList } from '~/types/movie';
 import { prepareSearchParams } from './prepareSearchParams';
+import { MOVIES_RESULT_TYPES } from '~/consts/movies';
 
 export const extendedApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -12,14 +13,26 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
       transformResponse(movies: IMovieFromList[], meta: any) {
         return { movies, totalCount: Number(meta.response.headers.get('X-Total-Count')) };
       },
-      providesTags: (result) => {
+      providesTags: (result, _error, arg) => {
         const movies = result?.movies || [];
-        return ['Movie', ...movies.map(({ id }: Pick<IMovie, 'id'>) => ({ type: 'Movie' as const, id }))];
+        const tags: any[] = ['Movie', ...movies.map(({ id }) => ({ type: 'Movie' as const, id }))];
+
+        if (arg.result_type === MOVIES_RESULT_TYPES.VIEWING_HISTORY) {
+          tags.push('ViewingHistory');
+        }
+
+        return tags;
       },
     }),
     getMovie: builder.query<IMovie, number>({
       query: (id) => `/movies/${id}`,
       providesTags: (_result, _error, arg) => [{ type: 'Movie' as const, id: arg }],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          dispatch(extendedApiSlice.util.invalidateTags(['ViewingHistory']));
+        } catch {}
+      },
     }),
     addMovieToWatchLater: builder.mutation<void, number>({
       query: (id) => ({
@@ -69,7 +82,7 @@ export const extendedApiSlice = apiSlice.injectEndpoints({
         url: `/movies/${id}/viewing_history`,
         method: 'DELETE',
       }),
-      invalidatesTags: (_result, _error, arg) => ['Movie', { type: 'Movie' as const, id: arg }],
+      invalidatesTags: (_result, _error, arg) => ['ViewingHistory', { type: 'Movie' as const, id: arg }],
     }),
   }),
 });
