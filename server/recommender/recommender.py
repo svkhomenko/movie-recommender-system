@@ -410,13 +410,24 @@ class Recommender:
         user_ratings = self.ratings_df[self.ratings_df["user_id"] == cur_user_id]
         rated_movies_ids = user_ratings["movie_id"].unique()
 
+        watched_ids: list[int] = []
+        with Session(engine) as session:
+            result_ids = session.exec(
+                select(models.Watched.movie_id)
+                .where(models.Watched.user_id == cur_user_id)
+                .distinct()
+            ).all()
+            watched_ids = [id for id in result_ids if id is not None]
+
         neighbor_ids = [n[0] for n in neighbors]
         neighbor_ratings = self.ratings_df[
             self.ratings_df["user_id"].isin(neighbor_ids)
         ]
         all_neighbor_movies_ids = neighbor_ratings["movie_id"].unique()
 
-        candidate_movies_ids = np.setdiff1d(all_neighbor_movies_ids, rated_movies_ids)
+        candidate_movies_ids = np.setdiff1d(
+            all_neighbor_movies_ids, np.concatenate((rated_movies_ids, watched_ids))
+        )
         return candidate_movies_ids
 
     def _predict_rating(
