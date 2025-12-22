@@ -26,7 +26,7 @@ type IProps = {
 };
 
 const MovieFilters = ({ setYearMin, setYearMax, setGenreIds }: IProps) => {
-  const { data: genresData, isLoading } = useGetGenresQuery();
+  const { data: genresData } = useGetGenresQuery();
 
   const genres = useMemo(() => {
     if (!genresData || !Array.isArray(genresData)) {
@@ -68,10 +68,6 @@ const MovieFilters = ({ setYearMin, setYearMax, setGenreIds }: IProps) => {
   useEffect(() => {
     set(genres);
   }, [genres]);
-
-  if (isLoading) {
-    return <></>;
-  }
 
   return (
     <form>
